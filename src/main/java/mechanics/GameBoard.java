@@ -57,7 +57,7 @@ public class GameBoard {
      * Init reset button.
      */
     public static void initResetButton(){
-        FIVInstance.getResetButton().setIcon(ImageManager.createImageIcon("resource/reset.png"));
+        FIVInstance.getResetButton().setIcon(ImageManager.createImageIcon("reset.png"));
         ButtonManage.simpleStyle(FIVInstance.getResetButton());
         FIVInstance.getResetButton().setVisible(true);
     }
@@ -66,7 +66,7 @@ public class GameBoard {
      * Init info button.
      */
     public static void initInfoButton(){
-        FIVInstance.getInfoButton().setIcon(ImageManager.createImageIcon("resource/info.png"));
+        FIVInstance.getInfoButton().setIcon(ImageManager.createImageIcon("info.png"));
         ButtonManage.simpleStyle(FIVInstance.getInfoButton());
         FIVInstance.getInfoButton().setVisible(true);
     }

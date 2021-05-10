@@ -66,7 +66,7 @@ public class InfoGame extends JDialog{
         jEditorPane.setEditable(false);
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        java.net.URL url = classLoader.getResource("resource/teach.html");
+        java.net.URL url = classLoader.getResource("teach.html");
 
         try {
             jEditorPane.setPage(url);

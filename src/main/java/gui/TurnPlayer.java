@@ -13,13 +13,13 @@ public class TurnPlayer {
      * @param player the player
      */
     public static void setTurn(boolean player) {
-        String imageName = null;
+        String imageName;
 
         //player true = yellow, false = red;
         if(player){
-            imageName = "resource/turnYellow.png";
+            imageName = "turnYellow.png";
         }else{
-            imageName = "resource/turnRed.png";
+            imageName = "turnRed.png";
         }
         ForzaIV.getInstance().getTurnLabel().setIcon(ImageManager.createImageIcon(imageName));
         ForzaIV.getInstance().getTurnLabel().repaint();
@@ -35,13 +35,13 @@ public class TurnPlayer {
 
         //tagLabel 0 = tagGame, 1 = tagWinYellow, 2 = tagWinRed, 3 = tagWinTie
         if(tagLabel == 0){
-            imageName = "resource/tagGame.png";
+            imageName = "tagGame.png";
         }else if(tagLabel == 1){
-            imageName = "resource/tagWinYellow.png";
+            imageName = "tagWinYellow.png";
         }else if(tagLabel == 2){
-            imageName = "resource/tagWinRed.png";
+            imageName = "tagWinRed.png";
         }else if(tagLabel == 3){
-            imageName = "resource/tagWinTie.png";
+            imageName = "tagWinTie.png";
         }
 
         ForzaIV.getInstance().getTagLabel().setIcon(ImageManager.createImageIcon(imageName));

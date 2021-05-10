@@ -46,7 +46,7 @@ public class Grid extends JComponent {
 
     public void paint(Graphics g) {
         super.paint(g);
-        init();
+        buildCellComponent();
         drawDiskette(g);
     }
 
@@ -55,7 +55,7 @@ public class Grid extends JComponent {
         return new Dimension(size, size);
     }
 
-    private void init(){
+    private void buildCellComponent(){
         Dimension size = getSize();
 
         radius = (int)(

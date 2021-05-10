@@ -67,7 +67,7 @@ public class ForzaIV {
         adaptWindow(frame);
 
         closeWindow(frame);
-        instance.chiudiButton.setIcon(ImageManager.createImageIcon("resource/close.png"));
+        instance.chiudiButton.setIcon(ImageManager.createImageIcon("close.png"));
         ButtonManage.simpleStyle(instance.chiudiButton);
 
         FrameDragListener moveFrame = new FrameDragListener(frame);
