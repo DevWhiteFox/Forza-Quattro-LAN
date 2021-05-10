@@ -1,5 +1,6 @@
 package gui;
 
+import componets.ButtonStyle;
 import mechanics.FrameDragListener;
 import mechanics.WinSystem;
 
@@ -68,7 +69,7 @@ public class ForzaIV {
 
         closeWindow(frame);
         instance.chiudiButton.setIcon(ImageManager.createImageIcon("close.png"));
-        ButtonManage.simpleStyle(instance.chiudiButton);
+        ButtonStyle.simpleStyle(instance.chiudiButton);
 
         FrameDragListener moveFrame = new FrameDragListener(frame);
         frame.addMouseListener(moveFrame);

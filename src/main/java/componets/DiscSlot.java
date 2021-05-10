@@ -1,4 +1,4 @@
-package gui;
+package componets;
 
 import javax.swing.JComponent;
 import java.awt.*;
@@ -6,40 +6,33 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 
 /**
- * The type Grid.
+ * The type DiscSlot.
  */
-public class Grid extends JComponent {
+public class DiscSlot extends JComponent {
 
     private int radius;
+    private int paddingBorder = 4;
+    private int offsetBorder = 4;
     private final double padding;
     private Boolean player;
     private boolean hovered;
     private Ellipse2D circle;
     private Ellipse2D border;
 
-    /**
-     * Instantiates a new Grid.
-     */
-    public Grid() {
-        this.radius = 50;
-        this.padding = 0.1;
-        hovered = false;
+    public DiscSlot() {
+        this(50,0.1,false);
     }
 
-    /**
-     * Sets player.
-     *
-     * @param player the player
-     */
+    public DiscSlot(int radius, double padding, boolean hovered) {
+        this.radius = radius;
+        this.padding = padding;
+        this.hovered = hovered;
+    }
+
     public void setPlayer(Boolean player) {
         this.player = player;
     }
 
-    /**
-     * Sets is hovered.
-     *
-     * @param state the state
-     */
     public void setIsHovered(boolean state) {
         hovered = state;
     }
@@ -47,33 +40,37 @@ public class Grid extends JComponent {
     public void paint(Graphics g) {
         super.paint(g);
         buildCellComponent();
-        drawDiskette(g);
+        drawCell(g);
     }
 
     public Dimension getPreferredSize() {
-        int size = 2 * (radius);
+        int size = radius + radius;
         return new Dimension(size, size);
     }
 
     private void buildCellComponent(){
         Dimension size = getSize();
 
-        radius = (int)(
-                (Math.min(size.width, size.height) / 2)
-                        -(radius*padding));
+        radius = (int)( (Math.min(size.width, size.height) / 2)
+                -(radius*padding));
+
+        double sizeWidth = (double)size.width / 2.0;
+        double sizeHeight = (double)size.height / 2.0;
+        double diameter = radius + radius;
+        double diameterBorder = (radius + paddingBorder) + (radius + paddingBorder);
 
         circle = new Ellipse2D.Double(
-                (size.width / 2) - radius,
-                (size.height / 2) - radius,
-                radius * 2, radius * 2);
+                sizeWidth - radius,
+                sizeHeight - radius,
+                diameter, diameter);
 
         border = new Ellipse2D.Double(
-                (size.width / 2) - radius - 4,
-                (size.height / 2) - radius - 4,
-                (radius+4) * 2, (radius+4) * 2);
+                sizeWidth - radius - offsetBorder,
+                sizeHeight - radius - offsetBorder,
+                diameterBorder, diameterBorder);
     }
 
-    private void drawDiskette(Graphics g){
+    private void drawCell(Graphics g){
         Graphics2D g2 = (Graphics2D) g;
         Area circleArea = new Area(circle);
         Area borderArea = new Area(border);
@@ -86,9 +83,9 @@ public class Grid extends JComponent {
             if (player) g2.setColor(Color.YELLOW);
             else g2.setColor(Color.RED);
         }else if(hovered){
-            g2.setColor(Color.LIGHT_GRAY);
+            g2.setColor(new Color(189, 189, 189, 255));
         }else{
-            g2.setColor(Color.DARK_GRAY);
+            g2.setColor(new Color(128, 128, 128, 128));
         }
 
         g2.fill(circleArea);

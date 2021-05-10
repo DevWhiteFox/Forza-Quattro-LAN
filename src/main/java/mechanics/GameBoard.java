@@ -1,6 +1,10 @@
 package mechanics;
 
-import gui.*;
+import componets.ButtonStyle;
+import componets.DiscSlot;
+import gui.ForzaIV;
+import gui.ImageManager;
+import gui.TurnPlayer;
 import html.InfoGame;
 
 import java.awt.*;
@@ -14,7 +18,7 @@ import java.util.Vector;
  * The type Game board.
  */
 public class GameBoard {
-    private static Vector<Grid> mapGrid;
+    private static Vector<DiscSlot> Grid;
     private static Vector<Integer> verticalStacked;
     private static Vector<Boolean> whoPlacedDisk;
 
@@ -40,10 +44,10 @@ public class GameBoard {
 
     private static void restart() {
         player = false;
-        mapGrid.clear();
+        Grid.clear();
         whoPlacedDisk = null;
         verticalStacked = null;
-        mapGrid = null;
+        Grid = null;
         FIVInstance.getGamePanel().removeAll();
         FIVInstance.getGamePanel().updateUI();
         setGameIsRunning(true);
@@ -58,7 +62,7 @@ public class GameBoard {
      */
     public static void initResetButton(){
         FIVInstance.getResetButton().setIcon(ImageManager.createImageIcon("reset.png"));
-        ButtonManage.simpleStyle(FIVInstance.getResetButton());
+        ButtonStyle.simpleStyle(FIVInstance.getResetButton());
         FIVInstance.getResetButton().setVisible(true);
     }
 
@@ -67,7 +71,7 @@ public class GameBoard {
      */
     public static void initInfoButton(){
         FIVInstance.getInfoButton().setIcon(ImageManager.createImageIcon("info.png"));
-        ButtonManage.simpleStyle(FIVInstance.getInfoButton());
+        ButtonStyle.simpleStyle(FIVInstance.getInfoButton());
         FIVInstance.getInfoButton().setVisible(true);
     }
 
@@ -92,15 +96,15 @@ public class GameBoard {
     private static void createGrid(){
         whoPlacedDisk = new Vector<>();
         verticalStacked = new Vector<>();
-        mapGrid = new Vector<>();
+        Grid = new Vector<>();
         int rows = FIVInstance.getRows();
         int columns = FIVInstance.getColumns();
         FIVInstance.getGamePanel().setLayout(new GridLayout(rows,columns));
         for (int i = 0; i < rows * columns; i++) {
-            Grid grid = new Grid();
-            grid.setPlayer(null);
-            mapGrid.add(grid);
-            FIVInstance.getGamePanel().add(grid);
+            DiscSlot slot = new DiscSlot();
+            slot.setPlayer(null);
+            Grid.add(slot);
+            FIVInstance.getGamePanel().add(slot);
             whoPlacedDisk.add(null);
         }
         for (int i = 0; i < columns; i++) {
@@ -128,8 +132,8 @@ public class GameBoard {
                 int columns = FIVInstance.getColumns();
 
                 if (lastColumnHovered != hoverColumn) {
-                    if (verticalStacked.get(hoverColumn) != -1) setHoverCell(mapGrid.get(verticalStacked.get(hoverColumn) * columns + hoverColumn), true);
-                    if (verticalStacked.get(lastColumnHovered) != -1) setHoverCell(mapGrid.get(verticalStacked.get(lastColumnHovered) * columns + lastColumnHovered), false);
+                    if (verticalStacked.get(hoverColumn) != -1) setHoverCell(Grid.get(verticalStacked.get(hoverColumn) * columns + hoverColumn), true);
+                    if (verticalStacked.get(lastColumnHovered) != -1) setHoverCell(Grid.get(verticalStacked.get(lastColumnHovered) * columns + lastColumnHovered), false);
                     lastColumnHovered = hoverColumn;
                 }
             }
@@ -153,8 +157,8 @@ public class GameBoard {
                     Integer nInColumn = verticalStacked.get(clickColumn);
                     verticalStacked.set(clickColumn, nInColumn - 1);
 
-                    setPlayerCell(mapGrid.get(nInColumn * columns + clickColumn));
-                    if (verticalStacked.get(clickColumn) != -1) setHoverCell(mapGrid.get(verticalStacked.get(clickColumn) * columns + clickColumn), true);
+                    setPlayerCell(Grid.get(nInColumn * columns + clickColumn));
+                    if (verticalStacked.get(clickColumn) != -1) setHoverCell(Grid.get(verticalStacked.get(clickColumn) * columns + clickColumn), true);
 
                     whoPlacedDisk.set(nInColumn * columns + clickColumn, player);
                     player = !player;
@@ -197,14 +201,14 @@ public class GameBoard {
         });
     }
 
-    private static void setHoverCell(Grid grid, boolean state){
-        grid.setIsHovered(state);
-        grid.repaint();
+    private static void setHoverCell(DiscSlot slot, boolean state){
+        slot.setIsHovered(state);
+        slot.repaint();
     }
 
-    private static void setPlayerCell(Grid grid){
-        grid.setPlayer(player);
-        grid.repaint();
+    private static void setPlayerCell(DiscSlot slot){
+        slot.setPlayer(player);
+        slot.repaint();
     }
 
     private static int getColumnsByX(int x) {
