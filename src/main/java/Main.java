@@ -1,5 +1,4 @@
 import gui.ForzaIV;
-import html.InfoGame;
 import mechanics.GameBoard;
 
 /**
@@ -12,28 +11,27 @@ public class Main {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        int rows;
-        int columns;
-        int minMatch;
-        boolean player;
+        int rows = 6;
+        int columns = 7;
+        int minMatch = 4;
+        boolean player = true;
 
         if(args.length == 4) {
             rows = Integer.parseInt(args[0]);
             columns = Integer.parseInt(args[1]);
             minMatch = Integer.parseInt(args[2]);
             player = Boolean.parseBoolean(args[3]);
-        }else{
-            rows = 6;
-            columns = 7;
-            minMatch = 4;
-            player = false;
+        }else if(args.length == 2){
+            rows = Integer.parseInt(args[0]);
+            columns = Integer.parseInt(args[1]);
         }
 
+        int finalRows = rows;
+        int finalColumns = columns;
+        int finalMinMatch = minMatch;
+        boolean finalPlayer = player;
         java.awt.EventQueue.invokeLater(() -> {
-            ForzaIV.initFIV(rows,columns,minMatch,player);
-            ForzaIV.start();
-            InfoGame.start();
-            GameBoard.start();
+            ForzaIV game = new GameBoard(finalRows, finalColumns, finalMinMatch, finalPlayer);
         });
     }
 }

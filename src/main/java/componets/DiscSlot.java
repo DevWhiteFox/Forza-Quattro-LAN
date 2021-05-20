@@ -19,6 +19,8 @@ public class DiscSlot extends JComponent {
     private Ellipse2D circle;
     private Ellipse2D border;
 
+    private Boolean whoPlaced = null;
+
     public DiscSlot() {
         this(50,0.1,false);
     }
@@ -29,8 +31,12 @@ public class DiscSlot extends JComponent {
         this.hovered = hovered;
     }
 
-    public void setPlayer(Boolean player) {
-        this.player = player;
+    public void placeDisc(Boolean player) {
+        whoPlaced = player;
+    }
+
+    public Boolean getWhoPlaced() {
+        return whoPlaced;
     }
 
     public void setIsHovered(boolean state) {
@@ -92,4 +98,6 @@ public class DiscSlot extends JComponent {
         g2.setColor(Color.BLACK);
         g2.draw(circle);
     }
+
+
 }
