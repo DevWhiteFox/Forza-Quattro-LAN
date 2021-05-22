@@ -2,6 +2,7 @@ package mechanics;
 
 import gui.TurnPlayer;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -9,59 +10,37 @@ import java.util.Vector;
  */
 public class WinSystem {
 
-    private static int minMatch;
-    private static int columns;
-    private static Boolean winner;
-    private static Vector<Boolean> boolMap;
+    private int minMatch;
+    private int columns;
+    private Boolean winner;
+    private ArrayList<Boolean> boolMap;
 
-    /**
-     * Set min match.
-     *
-     * @param mM the m m
-     */
-    public static void setMinMatch(int mM){
-        minMatch = mM;
+    public WinSystem(int minMatch, int columns) {
+        this.minMatch = minMatch;
+        this.columns = columns;
     }
 
-    /**
-     * Set columns.
-     *
-     * @param columns the columns
-     */
-    public static void setColumns(int columns){
-        WinSystem.columns = columns;
-    }
-
-    /**
-     * Import bool map.
-     *
-     * @param whoPlacedDisk the who placed disk
-     */
-    public static void importBoolMap(Vector<Boolean> whoPlacedDisk){
+    public void importBoolMap(ArrayList<Boolean> whoPlacedDisk){
         boolMap = whoPlacedDisk;
     }
 
-    /**
-     * Who win.
-     */
-    public static void whoWin() {
+    public Boolean whoWin() {
         if((int) TurnPlayer.getNumOfTurn() >= minMatch*2-1) {
             winner = horizontalSearch();
             if (winner == null) winner = verticalSearch();
             if (winner == null) winner = sdObliqueSearch();
             if (winner == null) winner = dsObliqueSearch();
             if (winner != null) {
-                TurnPlayer.setTagLabel((byte) (winner ? 1 : 2));
-                TurnPlayer.setTurn(winner);
-                GameBoard.setGameIsRunning(false);
+                //TODO Se qualcuno vince
             }else if(TurnPlayer.getNumOfTurn() == boolMap.size()){
-                TurnPlayer.setTagLabel((byte) 3);
-                GameBoard.setGameIsRunning(false);
+                //TODO Se fanno parita
+
             }
         }
+        return winner;
     }
 
-    private static Boolean horizontalSearch(){
+    private Boolean horizontalSearch(){
         Boolean commonValue = null;
         for (int i = 0; i < boolMap.size()-minMatch+1 && commonValue == null;) {
             commonValue = boolMap.get(i);
@@ -77,7 +56,7 @@ public class WinSystem {
         return commonValue;
     }
 
-    private static Boolean verticalSearch() {
+    private Boolean verticalSearch() {
         Boolean commonValue = null;
         //i, k = offset
         for (int i = 0; i < columns && commonValue == null; i++) {
@@ -96,7 +75,7 @@ public class WinSystem {
     }
 
     // s = SX, d = DX
-    private static Boolean sdObliqueSearch(){
+    private Boolean sdObliqueSearch(){
         Boolean commonValue = null;
         for (int i = 0; i < columns - minMatch + 1 && commonValue == null; i++) {
             for (int j = 0; j < boolMap.size() / columns  - minMatch + 1 && commonValue == null; j++) {
@@ -111,7 +90,7 @@ public class WinSystem {
         }
         return commonValue;
     }
-    private static Boolean dsObliqueSearch(){
+    private Boolean dsObliqueSearch(){
         Boolean commonValue = null;
         for (int i = 0; i < columns - minMatch + 1 && commonValue == null; i++) {
             for (int j = 0; j < boolMap.size() / columns  - minMatch + 1 && commonValue == null; j++) {

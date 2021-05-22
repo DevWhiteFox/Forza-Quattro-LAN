@@ -1,6 +1,7 @@
 package gui;
 
 import componets.ButtonStyle;
+import html.InfoGame;
 import mechanics.FrameDragListener;
 import mechanics.WinSystem;
 
@@ -13,28 +14,31 @@ import static java.lang.Math.min;
  * The type Forza iv.
  */
 public class ForzaIV extends JFrame{
-    private JPanel infoPanel;
-    private JPanel gamePanel;
-    private JPanel mainPanel;
-    private JLabel turnLabel;
-    private JLabel tagLabel;
-    private JButton resetButton;
-    private JButton chiudiButton;
-    private JButton infoButton;
+    protected JPanel infoPanel;
+    protected JPanel gamePanel;
+    protected JPanel mainPanel;
+    protected JLabel turnLabel;
+    protected JLabel tagLabel;
+    protected JButton resetButton;
+    protected JButton chiudiButton;
+    protected JButton infoButton;
 
-    private int rows;
-    private int columns;
-    private int minMatch;
-    private boolean defaultPlayer;
+    protected int rows;
+    protected int columns;
+    protected int minMatch;
+    protected boolean defaultPlayer;
 
-    TurnPlayer turnPlayer = new TurnPlayer();
-    WinSystem winSystem = new WinSystem();
+    protected TurnPlayer turnPlayer = new TurnPlayer();
+    protected WinSystem winSystem;
+    protected InfoGame infoGame = new InfoGame();
 
     public ForzaIV(int rows, int columns, int minMatch, boolean defaultPlayer) {
         this.rows = rows;
         this.columns = columns;
         this.minMatch = minMatch;
         this.defaultPlayer = defaultPlayer;
+
+
 
         initFrame();
     }
@@ -59,8 +63,7 @@ public class ForzaIV extends JFrame{
         turnPlayer.setTurn(defaultPlayer);
         turnPlayer.setTagLabel((byte) 0);
 
-        winSystem.setMinMatch(minMatch);
-        winSystem.setColumns(columns);
+        winSystem = new WinSystem(minMatch,columns);
     }
 
     public void initFrameFormat(){

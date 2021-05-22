@@ -1,15 +1,7 @@
 import gui.ForzaIV;
 import mechanics.GameBoard;
 
-/**
- * The type Main.
- */
 public class Main {
-    /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     */
     public static void main(String[] args) {
         int rows = 6;
         int columns = 7;

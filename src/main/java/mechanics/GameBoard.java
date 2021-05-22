@@ -20,10 +20,6 @@ public class GameBoard extends ForzaIV{
     private final boolean gameIsRunning;
     private Boolean player = false;
 
-    public GameBoard(int rows, int columns) {
-        this(rows,columns,4,true);
-    }
-
     public GameBoard(int rows, int columns, int minMatch, boolean defaultPlayer) {
         super(rows,columns,minMatch,defaultPlayer);
         grid = new GridSlot(columns);
@@ -140,8 +136,8 @@ public class GameBoard extends ForzaIV{
                     TurnPlayer.setTurn(player);
                     TurnPlayer.incNumOfTurn();
 
-                    WinSystem.importBoolMap( grid.getWhoPlacedList() );
-                    WinSystem.whoWin();
+                    winSystem.importBoolMap( grid.getWhoPlacedList() );
+                    winSystem.whoWin();
                 }
             }
         });
