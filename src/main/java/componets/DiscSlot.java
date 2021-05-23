@@ -14,7 +14,6 @@ public class DiscSlot extends JComponent {
     private int paddingBorder = 4;
     private int offsetBorder = 4;
     private final double padding;
-    private Boolean player;
     private boolean hovered;
     private Ellipse2D circle;
     private Ellipse2D border;
@@ -29,6 +28,10 @@ public class DiscSlot extends JComponent {
         this.radius = radius;
         this.padding = padding;
         this.hovered = hovered;
+    }
+
+    public void setEmptySlot() {
+        whoPlaced = null;
     }
 
     public void placeDisc(Boolean player) {
@@ -85,8 +88,8 @@ public class DiscSlot extends JComponent {
         borderArea.subtract(circleArea);
         g2.fill(borderArea);
 
-        if(player != null) {
-            if (player) g2.setColor(Color.YELLOW);
+        if(whoPlaced != null) {
+            if (whoPlaced) g2.setColor(Color.YELLOW);
             else g2.setColor(Color.RED);
         }else if(hovered){
             g2.setColor(new Color(189, 189, 189, 255));

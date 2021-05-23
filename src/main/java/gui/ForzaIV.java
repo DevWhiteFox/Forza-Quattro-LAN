@@ -28,17 +28,14 @@ public class ForzaIV extends JFrame{
     protected int minMatch;
     protected boolean defaultPlayer;
 
-    protected TurnPlayer turnPlayer = new TurnPlayer();
     protected WinSystem winSystem;
-    protected InfoGame infoGame = new InfoGame();
+    protected InfoGame infoGame;
 
     public ForzaIV(int rows, int columns, int minMatch, boolean defaultPlayer) {
         this.rows = rows;
         this.columns = columns;
         this.minMatch = minMatch;
         this.defaultPlayer = defaultPlayer;
-
-
 
         initFrame();
     }
@@ -60,9 +57,6 @@ public class ForzaIV extends JFrame{
     }
 
     private void initMatch() {
-        turnPlayer.setTurn(defaultPlayer);
-        turnPlayer.setTagLabel((byte) 0);
-
         winSystem = new WinSystem(minMatch,columns);
     }
 
@@ -101,5 +95,9 @@ public class ForzaIV extends JFrame{
         FrameDragListener moveFrame = new FrameDragListener(this);
         addMouseListener(moveFrame);
         addMouseMotionListener(moveFrame);
+    }
+
+    public JButton getInfoButton() {
+        return infoButton;
     }
 }

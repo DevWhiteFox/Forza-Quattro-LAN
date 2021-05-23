@@ -12,8 +12,9 @@ public class WinSystem {
 
     private int minMatch;
     private int columns;
-    private Boolean winner;
+    private byte verdict = 0;
     private ArrayList<Boolean> boolMap;
+    private TurnPlayer turnPlayer;
 
     public WinSystem(int minMatch, int columns) {
         this.minMatch = minMatch;
@@ -24,20 +25,22 @@ public class WinSystem {
         boolMap = whoPlacedDisk;
     }
 
-    public Boolean whoWin() {
-        if((int) TurnPlayer.getNumOfTurn() >= minMatch*2-1) {
-            winner = horizontalSearch();
+    public void importPlayerTurn(TurnPlayer turnPlayer){
+        this.turnPlayer = turnPlayer;
+    }
+
+    public void whoWin() {
+        if ((int) turnPlayer.getTurnCounter() >= minMatch * 2 - 1) {
+            Boolean winner = horizontalSearch();
             if (winner == null) winner = verticalSearch();
             if (winner == null) winner = sdObliqueSearch();
             if (winner == null) winner = dsObliqueSearch();
             if (winner != null) {
-                //TODO Se qualcuno vince
-            }else if(TurnPlayer.getNumOfTurn() == boolMap.size()){
-                //TODO Se fanno parita
-
+                verdict = (byte) (winner ? 1 : 2);
+            } else if (turnPlayer.getTurnCounter() == boolMap.size()) {
+                verdict = 3;
             }
         }
-        return winner;
     }
 
     private Boolean horizontalSearch(){
@@ -104,4 +107,8 @@ public class WinSystem {
             }
         }
         return commonValue; }
+
+    public byte getVerdict() {
+        return verdict;
+    }
 }

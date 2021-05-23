@@ -17,34 +17,41 @@ import java.awt.event.MouseEvent;
  */
 public class GameBoard extends ForzaIV{
     private final GridSlot grid;
-    private final boolean gameIsRunning;
-    private Boolean player = false;
+    private final TurnPlayer turnPlayer;
+
+    private boolean gameIsRunning;
+    private int lastColumnHovered = 0;
+
 
     public GameBoard(int rows, int columns, int minMatch, boolean defaultPlayer) {
         super(rows,columns,minMatch,defaultPlayer);
         grid = new GridSlot(columns);
+        turnPlayer = new TurnPlayer(true);
+        winSystem.importPlayerTurn(turnPlayer);
 
-        initBoard();
+        initGrid();
+        winSystem.importBoolMap( grid.getWhoPlacedList() );
+
         initComponent();
         initEventHandler();
+
+        changePlayerTurnBanner();
+        changeWinBanner((byte) 0);
 
         gameIsRunning = true;
     }
 
-    private void initBoard() {
+    private void resetBoard() {
         gamePanel.removeAll();
         gamePanel.updateUI();
 
-        TurnPlayer.setTurn(player);
-        TurnPlayer.setTagLabel((byte) 0);
-        TurnPlayer.resetNumOfTurn();
-
-        initGrid();
+        turnPlayer.resetTurn();
+        grid.resetSlots();
+        renderGrid();
     }
 
     private void initComponent(){
         initInfoButton();
-        initInfoGame();
         initResetButton();
     }
 
@@ -67,41 +74,74 @@ public class GameBoard extends ForzaIV{
         infoButton.setVisible(true);
     }
 
-    public void initInfoGame(){
-        infoGame.setLocationRelativeTo(this);
-        infoGame.pack();
-    }
-
     private void initGrid(){
         gamePanel.setLayout(new GridLayout(rows,columns));
 
         for (int i = 0; i < rows * columns; i++) {
             DiscSlot slot = new DiscSlot();
             grid.addDiscInGrid(slot);
+        }
+        renderGrid();
+    }
+
+    private void renderGrid(){
+        for (DiscSlot slot: grid.getAllSlots()) {
             gamePanel.add(slot);
+
         }
     }
 
+    private void changePlayerTurnBanner(){
+        String imageName;
+
+        //player true = yellow, false = red;
+        if(turnPlayer.getPlayerTurn()){
+            imageName = "turnYellow.png";
+        }else{
+            imageName = "turnRed.png";
+        }
+
+        turnLabel.setIcon(ImageManager.createImageIcon(imageName));
+        turnLabel.repaint();
+    }
+
+    public void changeWinBanner(byte winLabel) {
+        String imageName = null;
+
+        //tagLabel 0 = tagGame, 1 = tagWinYellow, 2 = tagWinRed, 3 = tagWinTie
+        if(winLabel == 0){
+            imageName = "tagGame.png";
+        }else if(winLabel == 1){
+            imageName = "tagWinYellow.png";
+        }else if(winLabel == 2){
+            imageName = "tagWinRed.png";
+        }else if(winLabel == 3){
+            imageName = "tagWinTie.png";
+        }
+
+        tagLabel.setIcon(ImageManager.createImageIcon(imageName));
+        tagLabel.repaint();
+    }
+
     private void moveListener() {
-
         gamePanel.addMouseMotionListener(new MouseAdapter() {
-
-            private int lastColumnHovered = 0;
 
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
 
                 int hoverColumn = getColumnsByX(e.getX());
-
+                int enoughVertically;
                 if (lastColumnHovered != hoverColumn) {
                     DiscSlot slot;
-                    if (grid.getSlotLeftVerticallyBy(hoverColumn) != 0) {
-                        slot = grid.getDiscByIndex(grid.getSlotLeftVerticallyBy(hoverColumn) * columns + hoverColumn);
+                    enoughVertically = grid.getSlotLeftVerticallyBy(hoverColumn) - 1;
+                    if (enoughVertically > -1) {
+                        slot = grid.getDiscByIndex(enoughVertically * columns + hoverColumn);
                         setHoverCell(slot, true);
                     }
-                    if (grid.getSlotLeftVerticallyBy(lastColumnHovered) != 0){
-                        slot = grid.getDiscByIndex(grid.getSlotLeftVerticallyBy(lastColumnHovered) * columns + lastColumnHovered);
+                    enoughVertically = grid.getSlotLeftVerticallyBy(lastColumnHovered) - 1;
+                    if (enoughVertically > -1){
+                        slot = grid.getDiscByIndex(enoughVertically * columns + lastColumnHovered);
                         setHoverCell(slot, false);
                     }
                     lastColumnHovered = hoverColumn;
@@ -112,43 +152,41 @@ public class GameBoard extends ForzaIV{
 
     private void clickListener(){
         gamePanel.addMouseListener(new MouseAdapter() {
-            /**
-             * {@inheritDoc}
-             *
-             * @param e
-             */
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
                 int clickColumn = getColumnsByX(e.getX());
-                int nInColumn = grid.getSlotLeftVerticallyBy(clickColumn);
-                if (nInColumn != 0 && gameIsRunning) {
+                int enoughVertically = grid.getSlotLeftVerticallyBy(clickColumn) - 1;
+                if (enoughVertically > -1 && gameIsRunning) {
+                    DiscSlot slot = grid.getDiscByIndex(enoughVertically * columns + clickColumn);
 
-                    setPlayerCell(grid.getDiscByIndex(nInColumn * columns + clickColumn));
-                    if (nInColumn != -1) {
-                        setHoverCell(grid.getDiscByIndex(nInColumn * columns + clickColumn), true);
-                    }
+                    setPlayerCell(slot);
+                    setHoverCell(slot, false);
 
-                    grid.getDiscByIndex(nInColumn * columns + clickColumn).placeDisc(player);
-                    player = !player;
-
-                    TurnPlayer.setTurn(player);
-                    TurnPlayer.incNumOfTurn();
-
-                    winSystem.importBoolMap( grid.getWhoPlacedList() );
+                    turnPlayer.nextTurn();
                     winSystem.whoWin();
+
+                    if(winSystem.getVerdict() != 0){
+                        changeWinBanner( winSystem.getVerdict() );
+                        gameIsRunning = false;
+                    }
+                    changePlayerTurnBanner();
                 }
             }
         });
     }
 
     private void resetButtonListener() {
-        resetButton.addActionListener(e -> initBoard());
+        resetButton.addActionListener(e -> resetBoard());
     }
 
     private void infoButtonListener() {
-        infoButton.addActionListener(e -> InfoGame.getInstance().setVisible(true));
+        infoButton.addActionListener(e -> {
+            infoGame = new InfoGame(this);
+            infoGame.showInfo();
+        });
     }
 
     private void setHoverCell(DiscSlot slot, boolean state){
@@ -157,7 +195,7 @@ public class GameBoard extends ForzaIV{
     }
 
     private void setPlayerCell(DiscSlot slot){
-        slot.placeDisc(player);
+        slot.placeDisc( turnPlayer.getPlayerTurn() );
         slot.repaint();
     }
 

@@ -24,7 +24,7 @@ public class GridSlot {
         int row = discSlotList.size() / columns;
 
         for (int i = 0; i < row; i++) {
-            if( discSlotList.get(i * columns + pillar) != null ) {
+            if( getDiscByIndex(i * columns + pillar).getWhoPlaced() == null ) {
                 slotLeft++;
             }
         }
@@ -38,5 +38,15 @@ public class GridSlot {
             whoPlacedList.add( discSlot.getWhoPlaced() );
         }
         return whoPlacedList;
+    }
+
+    public void resetSlots(){
+        for (DiscSlot discSlot: discSlotList) {
+            discSlot.setEmptySlot();
+        }
+    }
+
+    public ArrayList<DiscSlot> getAllSlots() {
+        return discSlotList;
     }
 }
