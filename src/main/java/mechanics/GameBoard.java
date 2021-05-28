@@ -30,7 +30,6 @@ public class GameBoard extends ForzaIV{
         winSystem.importPlayerTurn(turnPlayer);
 
         initGrid();
-        winSystem.importBoolMap( grid.getWhoPlacedList() );
 
         initComponent();
         initEventHandler();
@@ -87,7 +86,6 @@ public class GameBoard extends ForzaIV{
     private void renderGrid(){
         for (DiscSlot slot: grid.getAllSlots()) {
             gamePanel.add(slot);
-
         }
     }
 
@@ -166,12 +164,13 @@ public class GameBoard extends ForzaIV{
                     setHoverCell(slot, false);
 
                     turnPlayer.nextTurn();
+                    winSystem.importBoolMap( grid.getWhoPlacedList() );
                     winSystem.whoWin();
 
-                    if(winSystem.getVerdict() != 0){
-                        changeWinBanner( winSystem.getVerdict() );
-                        gameIsRunning = false;
-                    }
+
+                    changeWinBanner( winSystem.getVerdict() );
+                    //gameIsRunning = false;
+
                     changePlayerTurnBanner();
                 }
             }

@@ -30,7 +30,7 @@ public class WinSystem {
     }
 
     public void whoWin() {
-        if ((int) turnPlayer.getTurnCounter() >= minMatch * 2 - 1) {
+        if (turnPlayer.getTurnCounter() >= minMatch * 2 - 1) {
             Boolean winner = horizontalSearch();
             if (winner == null) winner = verticalSearch();
             if (winner == null) winner = sdObliqueSearch();

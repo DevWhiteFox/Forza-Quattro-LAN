@@ -18,7 +18,7 @@ public class DiscSlot extends JComponent {
     private Ellipse2D circle;
     private Ellipse2D border;
 
-    private Boolean whoPlaced = null;
+    private Boolean whoPlaced;
 
     public DiscSlot() {
         this(50,0.1,false);
