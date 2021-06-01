@@ -1,11 +1,12 @@
 package html;
 
-import gui.ForzaIV;
 import mechanics.FrameDragListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 /**
@@ -16,46 +17,44 @@ public class InfoGame extends JDialog{
     private JButton quitButton;
     private JPanel htmlPage;
 
-    private static InfoGame instance;
+    private JFrame fqFrame;
 
-    /**
-     * Get instance info game.
-     *
-     * @return the info game
-     */
-    public static InfoGame getInstance(){
-        return instance;
+    public InfoGame(JFrame fqFrame) {
+        this.fqFrame = fqFrame;
+        initDialog();
     }
 
-    /**
-     * Start.
-     */
-    public static void start() {
-        instance = new InfoGame();
-        instance.setContentPane(instance.contentPane);
-        instance.setModal(true);
-        instance.setResizable(false);
-        instance.setUndecorated(true);
-        instance.getRootPane().setDefaultButton(instance.quitButton);
-        instance.createUI();
-        instance.setLocationRelativeTo(ForzaIV.getInstance().getInfoButton());
+    public void showInfo() {
+        createUI();
+        pack();
+        setVisible(true);
+    }
 
-        FrameDragListener moveDialog = new FrameDragListener(instance);
-        instance.addMouseListener(moveDialog);
-        instance.addMouseMotionListener(moveDialog);
+    public void initDialog() {
+        setContentPane(contentPane);
+        setModal(true);
+        setResizable(false);
+        setUndecorated(true);
 
-        instance.quitButton.addActionListener(e -> instance.onCancel());
+        getRootPane().setDefaultButton(quitButton);
+        setLocationRelativeTo(fqFrame);
+
+        FrameDragListener moveDialog = new FrameDragListener(this);
+        addMouseListener(moveDialog);
+        addMouseMotionListener(moveDialog);
+
+        quitButton.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
-        instance.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        instance.addWindowListener(new WindowAdapter() {
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                instance.onCancel();
+                onCancel();
             }
         });
 
         // call onCancel() on ESCAPE
-        instance.contentPane.registerKeyboardAction(e -> instance.onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void createUI(){

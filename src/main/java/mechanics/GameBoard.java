@@ -2,219 +2,212 @@ package mechanics;
 
 import componets.ButtonStyle;
 import componets.DiscSlot;
+import componets.GridSlot;
 import gui.ForzaIV;
 import gui.ImageManager;
 import gui.TurnPlayer;
 import html.InfoGame;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
 
 /**
  * The type Game board.
  */
-public class GameBoard {
-    private static Vector<DiscSlot> Grid;
-    private static Vector<Integer> verticalStacked;
-    private static Vector<Boolean> whoPlacedDisk;
+public class GameBoard extends ForzaIV{
+    private final GridSlot grid;
+    private final TurnPlayer turnPlayer;
 
-    private static Boolean player = false;
-    private static boolean gameIsRunning = true;
+    private boolean gameIsRunning;
+    private int lastColumnHovered = 0;
 
-    private static ForzaIV FIVInstance;
 
-    /**
-     * Start.
-     */
-    public static void start(){
-        GameBoard.FIVInstance = ForzaIV.getInstance();
-        createGrid();
+    public GameBoard(int rows, int columns, int minMatch, boolean defaultPlayer) {
+        super(rows,columns,minMatch,defaultPlayer);
+        grid = new GridSlot(columns);
+        turnPlayer = new TurnPlayer(true);
+        winSystem.importPlayerTurn(turnPlayer);
+
+        initGrid();
+
+        initComponent();
+        initEventHandler();
+
+        changePlayerTurnBanner();
+        changeWinBanner((byte) 0);
+
+        gameIsRunning = true;
+    }
+
+    private void resetBoard() {
+        gamePanel.removeAll();
+        gamePanel.updateUI();
+
+        turnPlayer.resetTurn();
+        grid.resetSlots();
+        renderGrid();
+    }
+
+    private void initComponent(){
         initInfoButton();
-        initInfoGame();
         initResetButton();
-        java.awt.EventQueue.invokeLater(GameBoard::moveListener);
-        java.awt.EventQueue.invokeLater(GameBoard::clickListener);
-        java.awt.EventQueue.invokeLater(GameBoard::resetButtonListener);
-        java.awt.EventQueue.invokeLater(GameBoard::infoButtonListener);
     }
 
-    private static void restart() {
-        player = false;
-        Grid.clear();
-        whoPlacedDisk = null;
-        verticalStacked = null;
-        Grid = null;
-        FIVInstance.getGamePanel().removeAll();
-        FIVInstance.getGamePanel().updateUI();
-        setGameIsRunning(true);
-        TurnPlayer.setTurn(player);
-        TurnPlayer.setTagLabel((byte) 0);
-        TurnPlayer.resetNumOfTurn();
-        createGrid();
+    private void initEventHandler(){
+        java.awt.EventQueue.invokeLater(this::moveListener);
+        java.awt.EventQueue.invokeLater(this::clickListener);
+        java.awt.EventQueue.invokeLater(this::resetButtonListener);
+        java.awt.EventQueue.invokeLater(this::infoButtonListener);
     }
 
-    /**
-     * Init reset button.
-     */
-    public static void initResetButton(){
-        FIVInstance.getResetButton().setIcon(ImageManager.createImageIcon("reset.png"));
-        ButtonStyle.simpleStyle(FIVInstance.getResetButton());
-        FIVInstance.getResetButton().setVisible(true);
+    public void initResetButton(){
+        resetButton.setIcon(ImageManager.createImageIcon("reset.png"));
+        ButtonStyle.simpleStyle(resetButton);
+        resetButton.setVisible(true);
     }
 
-    /**
-     * Init info button.
-     */
-    public static void initInfoButton(){
-        FIVInstance.getInfoButton().setIcon(ImageManager.createImageIcon("info.png"));
-        ButtonStyle.simpleStyle(FIVInstance.getInfoButton());
-        FIVInstance.getInfoButton().setVisible(true);
+    public void initInfoButton(){
+        infoButton.setIcon(ImageManager.createImageIcon("info.png"));
+        ButtonStyle.simpleStyle(infoButton);
+        infoButton.setVisible(true);
     }
 
+    private void initGrid(){
+        gamePanel.setLayout(new GridLayout(rows,columns));
 
-    /**
-     * Init info game.
-     */
-    public static void initInfoGame(){
-        InfoGame.getInstance().setLocationRelativeTo(ForzaIV.getInstance().getGamePanel());
-        InfoGame.getInstance().pack();
-    }
-
-    /**
-     * Set game is running.
-     *
-     * @param gir the gir
-     */
-    public static void setGameIsRunning(boolean gir){
-        gameIsRunning = gir;
-    }
-
-    private static void createGrid(){
-        whoPlacedDisk = new Vector<>();
-        verticalStacked = new Vector<>();
-        Grid = new Vector<>();
-        int rows = FIVInstance.getRows();
-        int columns = FIVInstance.getColumns();
-        FIVInstance.getGamePanel().setLayout(new GridLayout(rows,columns));
         for (int i = 0; i < rows * columns; i++) {
             DiscSlot slot = new DiscSlot();
-            slot.setPlayer(null);
-            Grid.add(slot);
-            FIVInstance.getGamePanel().add(slot);
-            whoPlacedDisk.add(null);
+            grid.addDiscInGrid(slot);
         }
-        for (int i = 0; i < columns; i++) {
-            verticalStacked.add(rows - 1);
+        renderGrid();
+    }
+
+    private void renderGrid(){
+        for (DiscSlot slot: grid.getAllSlots()) {
+            gamePanel.add(slot);
         }
     }
 
-    private static void moveListener() {
+    private void changePlayerTurnBanner(){
+        String imageName;
 
-        FIVInstance.getGamePanel().addMouseMotionListener(new MouseAdapter() {
+        //player true = yellow, false = red;
+        if(turnPlayer.getPlayerTurn()){
+            imageName = "turnYellow.png";
+        }else{
+            imageName = "turnRed.png";
+        }
 
-            private int lastColumnHovered = 0;
+        turnLabel.setIcon(ImageManager.createImageIcon(imageName));
+        turnLabel.repaint();
+    }
 
-            /**
-             * {@inheritDoc}
-             *
-             * @param e
-             * @since 1.6
-             */
+    public void changeWinBanner(byte winLabel) {
+        String imageName = null;
+
+        //tagLabel 0 = tagGame, 1 = tagWinYellow, 2 = tagWinRed, 3 = tagWinTie
+        if(winLabel == 0){
+            imageName = "tagGame.png";
+        }else if(winLabel == 1){
+            imageName = "tagWinYellow.png";
+        }else if(winLabel == 2){
+            imageName = "tagWinRed.png";
+        }else if(winLabel == 3){
+            imageName = "tagWinTie.png";
+        }
+
+        tagLabel.setIcon(ImageManager.createImageIcon(imageName));
+        tagLabel.repaint();
+    }
+
+    private void moveListener() {
+        gamePanel.addMouseMotionListener(new MouseAdapter() {
+
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
 
                 int hoverColumn = getColumnsByX(e.getX());
-                int columns = FIVInstance.getColumns();
-
+                int enoughVertically;
                 if (lastColumnHovered != hoverColumn) {
-                    if (verticalStacked.get(hoverColumn) != -1) setHoverCell(Grid.get(verticalStacked.get(hoverColumn) * columns + hoverColumn), true);
-                    if (verticalStacked.get(lastColumnHovered) != -1) setHoverCell(Grid.get(verticalStacked.get(lastColumnHovered) * columns + lastColumnHovered), false);
+                    DiscSlot slot;
+                    enoughVertically = grid.getSlotLeftVerticallyBy(hoverColumn) - 1;
+                    if (enoughVertically > -1) {
+                        slot = grid.getDiscByIndex(enoughVertically * columns + hoverColumn);
+                        setHoverCell(slot, true);
+                    }
+                    enoughVertically = grid.getSlotLeftVerticallyBy(lastColumnHovered) - 1;
+                    if (enoughVertically > -1){
+                        slot = grid.getDiscByIndex(enoughVertically * columns + lastColumnHovered);
+                        setHoverCell(slot, false);
+                    }
                     lastColumnHovered = hoverColumn;
                 }
             }
         });
     }
 
-    private static void clickListener(){
-        FIVInstance.getGamePanel().addMouseListener(new MouseAdapter() {
-            /**
-             * {@inheritDoc}
-             *
-             * @param e
-             */
+    private void clickListener(){
+        gamePanel.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
                 int clickColumn = getColumnsByX(e.getX());
-                if (verticalStacked.get(clickColumn) != -1 && gameIsRunning) {
-                    int columns = FIVInstance.getColumns();
-                    Integer nInColumn = verticalStacked.get(clickColumn);
-                    verticalStacked.set(clickColumn, nInColumn - 1);
+                int enoughVertically = grid.getSlotLeftVerticallyBy(clickColumn) - 1;
+                if (enoughVertically > -1 && gameIsRunning) {
+                    DiscSlot slot = grid.getDiscByIndex(enoughVertically * columns + clickColumn);
 
-                    setPlayerCell(Grid.get(nInColumn * columns + clickColumn));
-                    if (verticalStacked.get(clickColumn) != -1) setHoverCell(Grid.get(verticalStacked.get(clickColumn) * columns + clickColumn), true);
+                    setPlayerCell(slot);
+                    setHoverCell(slot, false);
 
-                    whoPlacedDisk.set(nInColumn * columns + clickColumn, player);
-                    player = !player;
+                    turnPlayer.nextTurn();
+                    winSystem.importBoolMap( grid.getWhoPlacedList() );
+                    winSystem.whoWin();
 
-                    TurnPlayer.setTurn(player);
-                    TurnPlayer.incNumOfTurn();
 
-                    WinSystem.importBoolMap(whoPlacedDisk);
-                    WinSystem.whoWin();
+                    changeWinBanner( winSystem.getVerdict() );
+                    //gameIsRunning = false;
+
+                    changePlayerTurnBanner();
                 }
             }
         });
     }
 
-    private static void resetButtonListener() {
-        FIVInstance.getResetButton().addActionListener(new ActionListener() {
-            /**
-             * Invoked when an action occurs.
-             *
-             * @param e the event to be processed
-             */
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                restart();
-            }
+    private void resetButtonListener() {
+        resetButton.addActionListener(e -> resetBoard());
+    }
+
+    private void infoButtonListener() {
+        infoButton.addActionListener(e -> {
+            infoGame = new InfoGame(this);
+            infoGame.showInfo();
         });
     }
 
-    private static void infoButtonListener() {
-        FIVInstance.getInfoButton().addActionListener(new ActionListener() {
-            /**
-             * Invoked when an action occurs.
-             *
-             * @param e the event to be processed
-             */
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                InfoGame.getInstance().setVisible(true);
-            }
-        });
-    }
-
-    private static void setHoverCell(DiscSlot slot, boolean state){
+    private void setHoverCell(DiscSlot slot, boolean state){
         slot.setIsHovered(state);
         slot.repaint();
     }
 
-    private static void setPlayerCell(DiscSlot slot){
-        slot.setPlayer(player);
+    private void setPlayerCell(DiscSlot slot){
+        slot.placeDisc( turnPlayer.getPlayerTurn() );
         slot.repaint();
     }
 
-    private static int getColumnsByX(int x) {
-        int j = 0;
-        int columns = FIVInstance.getColumns();
-        for(int i = FIVInstance.getGamePanel().getWidth()/columns; i < FIVInstance.getGamePanel().getWidth() && i < x; i += FIVInstance.getGamePanel().getWidth()/columns, j++);
-        return j;
+    private int getColumnsByX(int xCoord) {
+        int gameWidth = gamePanel.getWidth();
+        int xLambda = gameWidth/columns;
+
+        int nSection = 0;
+        for(int i = xLambda; i < xCoord; i += xLambda){
+            if(i < gameWidth){
+                nSection++;
+            }
+        }
+        return nSection;
     }
 }
