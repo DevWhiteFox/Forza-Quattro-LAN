@@ -111,4 +111,8 @@ public class WinSystem {
     public byte getVerdict() {
         return verdict;
     }
+
+    public void resetVerdict(){
+        verdict = 0;
+    }
 }

@@ -11,8 +11,8 @@ import java.awt.geom.Ellipse2D;
 public class DiscSlot extends JComponent {
 
     private int radius;
-    private int paddingBorder = 4;
-    private int offsetBorder = 4;
+    private final int paddingBorder = 4;
+    private final int offsetBorder = 4;
     private final double padding;
     private boolean hovered;
     private Ellipse2D circle;

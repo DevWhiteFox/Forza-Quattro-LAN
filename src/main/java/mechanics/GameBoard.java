@@ -47,6 +47,8 @@ public class GameBoard extends ForzaIV{
         turnPlayer.resetTurn();
         grid.resetSlots();
         renderGrid();
+        winSystem.resetVerdict();
+        gameIsRunning = true;
     }
 
     private void initComponent(){
@@ -167,9 +169,9 @@ public class GameBoard extends ForzaIV{
                     winSystem.importBoolMap( grid.getWhoPlacedList() );
                     winSystem.whoWin();
 
-
-                    changeWinBanner( winSystem.getVerdict() );
-                    //gameIsRunning = false;
+                    byte verdict = winSystem.getVerdict();
+                    changeWinBanner( verdict );
+                    gameIsRunning = verdict == 0;
 
                     changePlayerTurnBanner();
                 }
